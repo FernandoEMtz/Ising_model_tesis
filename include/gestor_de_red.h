@@ -22,6 +22,8 @@ typedef struct {
     int n_temp; //Mismo caso, se va para el cjson,
     double temp_i;
     double temp_f;
+    double energia_total;
+    int magn_total;
 }caract_red_t;
 
 caract_red_t genera_red(int largo_red);
@@ -29,6 +31,6 @@ void libera_memoria_red(caract_red_t *red);
 void inicia_randomizador_pcg64(pcg64_random_t *random_local, uint64_t state_init, uint64_t state_seq);
 double ejecuta_randomizador_pcg64(pcg64_random_t *random_local);
 void inicio_red_spines(caract_red_t *ejecucion);
-int suma_de_vecinos(const caract_red_t *ejecucion, int i);
+int funcion_suma_de_vecinos(const caract_red_t *ejecucion, int i);
 
 #endif //TESIS_MODELO_ISING_V1_GESTOR_RED_H

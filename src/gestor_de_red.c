@@ -26,6 +26,8 @@ caract_red_t genera_red(int largo_red) {
     alm_red.temp_i = 2.0;
     alm_red.temp_f = 2.5;
     alm_red.n_temp = 41;
+    alm_red.energia_total = 0.0;
+    alm_red.magn_total = 0;
 
     alm_red.n_sp = alm_red.largo_red*alm_red.largo_red; //Determinamos que el tamaño del arreglo sea largo*largo
     alm_red.spin= (int8_t *)malloc(alm_red.n_sp * sizeof(int8_t)); //Asignamos memoria dinamica para el arreglo de spines
@@ -64,7 +66,7 @@ void inicio_red_spines(caract_red_t *ejecucion) {
     }
 }
 
-int suma_de_vecinos(const caract_red_t *ejecucion, int i) {
+int funcion_suma_de_vecinos(const caract_red_t *ejecucion, int i) {
     int j = 0, k = 0, up = 0, dw = 0, lf = 0, rg = 0;
     int largo = ejecucion->largo_red;
 

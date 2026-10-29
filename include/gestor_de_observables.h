@@ -7,7 +7,8 @@
 
 #include "gestor_de_red.h"
 
-double funcion_magnetizacion(caract_red_t *ejecucion);
-double funcion_hamiltoniano(caract_red_t *ejecucion);
+double funcion_magnetizacion_por_spin(const caract_red_t *ejecucion);
+int funcion_magnetizacion_total(const caract_red_t *ejecucion);
+double funcion_hamiltoniano(const caract_red_t *ejecucion);
 
 #endif //TESIS_MODELO_ISING_V1_GESTOR_OBSERVABLES_H

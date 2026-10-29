@@ -61,7 +61,7 @@ static int validar_configuraciones_red(void) {
         red.spin[i] = 1;
     }
     aux1 = funcion_hamiltoniano(&red);
-    aux2 = funcion_magnetizacion(&red);
+    aux2 = funcion_magnetizacion_por_spin(&red);
     printf("Todo +1 \t energia %lf \tmagnetizacion por spin %lf\n", aux1, aux2);
     if (aux1 != -512.00 || aux2 != 1.0) estado_prueba = FALLO;
     printf("\tSegunda prueba: %d\n",estado_prueba);
@@ -71,7 +71,7 @@ static int validar_configuraciones_red(void) {
         red.spin[i] = -1;
     }
     aux1 = funcion_hamiltoniano(&red);
-    aux2 = funcion_magnetizacion(&red);
+    aux2 = funcion_magnetizacion_por_spin(&red);
     printf("Todo -1 \t energia %lf \tmagnetizacion por spin %lf\n", aux1, aux2);
     if (aux1 != -512.00 || aux2 != -1.0) estado_prueba = FALLO;
     printf("\tTercera prueba: %d\n",estado_prueba);
@@ -81,7 +81,7 @@ static int validar_configuraciones_red(void) {
         if ((i/red.largo_red + i % red.largo_red) % 2 == 0) red.spin[i] = -1; else red.spin[i] = 1;
     }
     aux1 = funcion_hamiltoniano(&red);
-    aux2 = funcion_magnetizacion(&red);
+    aux2 = funcion_magnetizacion_por_spin(&red);
     printf("Tablero \t energia %lf \tmagnetizacion por spin %lf\n", aux1, aux2);
     if (aux1 != 512.00 || aux2 != 0.0) estado_prueba = FALLO;
     printf("\tCuarta prueba:  %d\n",estado_prueba);
@@ -92,10 +92,10 @@ static int validar_configuraciones_red(void) {
         if (i == red.n_sp -1) red.spin[i] = -1;
     }
     aux1 = funcion_hamiltoniano(&red);
-    aux2 = funcion_magnetizacion(&red);
+    aux2 = funcion_magnetizacion_por_spin(&red);
     printf("255 | -1 \t energia %lf \tmagnetizacion por spin %lf\n", aux1, aux2);
     for (i = 0; i < red.n_sp; i++) {
-        if (suma_de_vecinos(&red, i) != 4) {
+        if (funcion_suma_de_vecinos(&red, i) != 4) {
             printf("Posicion: %d\n", i);
             aux3++;
         }
