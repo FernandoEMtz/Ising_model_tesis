@@ -10,16 +10,24 @@
 
 //Recibimos los datos para crear cada red, será de tamaño dinamico, con base al largo que recibiremos
 
-caract_red_t genera_red() {
+caract_red_t genera_red(int largo_red) {
     caract_red_t alm_red;
 
-    alm_red.largo_red = 16;//Después podemos cambiar este 16 con el sentido del tamaño creciente de la red
+    if (largo_red < 4) {
+        printf("Error al crear la red, largo muy pequenio\n");
+        exit(EXIT_FAILURE);
+    }
+
+    alm_red.largo_red = largo_red;//Después podemos cambiar este 16 con el sentido del tamaño creciente de la red
+
+    alm_red.J = 1.0;//Despues podemos cambiar de dirección al cjson
+    alm_red.h_campo = 0.0; //Mismo caso que con J
 
     alm_red.n_sp = alm_red.largo_red*alm_red.largo_red; //Determinamos que el tamaño del arreglo sea largo*largo
     alm_red.spin= (int8_t *)malloc(alm_red.n_sp * sizeof(int8_t)); //Asignamos memoria dinamica para el arreglo de spines
 
     if (alm_red.spin == NULL) {
-        printf("Error al asignar memoria para %u entradas de la red\n", alm_red.n_sp);
+        printf("Error al asignar memoria para %d entradas de la red\n", alm_red.n_sp);
         exit(EXIT_FAILURE);
     }
     return alm_red;
@@ -42,11 +50,11 @@ double ejecuta_randomizador_pcg64(pcg64_random_t *random_local) {
 }
 
 void inicio_red_spines(caract_red_t *ejecucion) {
-    uint32_t i = 0;
+    int i = 0;
     double randomcito = 0.0;
 
     for (i = 0; i < ejecucion->n_sp; i++) {
-        randomcito = ejecuta_randomizador_pcg64(&ejecucion->state_ini);
+        randomcito = ejecuta_randomizador_pcg64(&ejecucion->generador_rng);
         //printf("%f\n", randomcito);
         ejecucion->spin[i] = (randomcito < 0.5) ? -1 : 1;
     }

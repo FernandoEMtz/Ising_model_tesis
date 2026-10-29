@@ -10,15 +10,17 @@
 #include "pcg_variants.h"
 
 typedef struct {
-    uint16_t largo_red;      //Reemplaza a n_x y n_y este caso es siempre para una red cuadrada
-    uint32_t n_sp;           //Tota de spines, se obtiene por largo_red*largo_red
+    int largo_red;      //Reemplaza a n_x y n_y este caso es siempre para una red cuadrada
+    int n_sp;           //Tota de spines, se obtiene por largo_red*largo_red
     int8_t *spin;            //Será el puntero del arreglo de spines de longitud dinamica
     pcg64_random_t generador_rng;
-    pcg64_random_t state_ini;      //PCG64 primera semilla, seguimos la convención de la librería
-    pcg64_random_t state_seq;      //PCG64 segunda semilla, seguimos la convención de la librería
+    //pcg64_random_t state_ini; PCG64 primera semilla, seguimos la convención de la librería
+    //pcg64_random_t state_seq; PCG64 segunda semilla, seguimos la convención de la librería
+    double J;
+    double h_campo;
 }caract_red_t;
 
-caract_red_t genera_red();
+caract_red_t genera_red(int largo_red);
 void libera_memoria_red(caract_red_t *red);
 void inicia_randomizador_pcg64(pcg64_random_t *random_local, uint64_t state_init, uint64_t state_seq);
 double ejecuta_randomizador_pcg64(pcg64_random_t *random_local);
@@ -26,4 +28,3 @@ void inicio_red_spines(caract_red_t *ejecucion);
 int suma_de_vecinos(const caract_red_t *ejecucion, int i);
 
 #endif //TESIS_MODELO_ISING_V1_GESTOR_RED_H
-
