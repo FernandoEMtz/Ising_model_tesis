@@ -17,10 +17,12 @@ add_library(pcg_static STATIC ${pcg_source})
 target_include_directories(pcg_static PUBLIC extern/pcg-c-0.94/include)
 
 add_executable(Tesis_Modelo_Ising_V1 main.c
-        src/gestor_red.c
-        include/gestor_red.h
-        src/gestor_observables.c
-        include/gestor_observables.h)
+        src/gestor_de_red.c
+        include/gestor_de_red.h
+        src/gestor_de_observables.c
+        include/gestor_de_observables.h
+        src/gestor_tabla_boltzmann.c
+        include/gestor_tabla_boltzmann.h)
 target_include_directories(Tesis_Modelo_Ising_V1 PRIVATE include)
 
 target_link_libraries(Tesis_Modelo_Ising_V1 PRIVATE cjson_static pcg_static)

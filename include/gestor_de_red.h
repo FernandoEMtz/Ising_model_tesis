@@ -18,6 +18,10 @@ typedef struct {
     //pcg64_random_t state_seq; PCG64 segunda semilla, seguimos la convención de la librería
     double J;
     double h_campo;
+    int n_vec; //Recordemos que tenemos a los vecinos, tambien si es necesario mantener el dato, supongo que si
+    int n_temp; //Mismo caso, se va para el cjson,
+    double temp_i;
+    double temp_f;
 }caract_red_t;
 
 caract_red_t genera_red(int largo_red);

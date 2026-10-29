@@ -2,8 +2,8 @@
 // Created by Fernando on 28/10/2026.
 //
 
-#include "gestor_observables.h"
-#include "gestor_red.h"
+#include "gestor_de_observables.h"
+#include "gestor_de_red.h"
 
 double funcion_magnetizacion(caract_red_t *ejecucion) {
     int i = 0;

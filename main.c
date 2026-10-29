@@ -1,7 +1,9 @@
 #include <stdio.h>
+#include <stdlib.h>
 
-#include "gestor_red.h"
-#include "gestor_observables.h"
+#include "gestor_de_red.h"
+#include "gestor_de_observables.h"
+#include "gestor_tabla_boltzmann.h"
 //Los .c van en /src y los .h en /include
 
 static int validar_configuraciones_red(void);
@@ -10,18 +12,36 @@ static int validar_configuraciones_red(void);
 #define FALLO 0
 
 int main(void) {
+
+    caract_red_t red = genera_red(16);
+
+    tabla_boltzmann_t *tabla_temp;
+    tabla_temp = malloc(red.n_temp * sizeof(tabla_boltzmann_t));
+
+    if (tabla_temp == NULL) exit(EXIT_FAILURE);
+
+    genera_tabla_boltzmann(&red, tabla_temp);
+
     if (validar_configuraciones_red() == OK) {
         printf("\nOK (Todas las condiciones se cumplen)\n");
     } else {
         printf("\n FALLO (Alguna condicion fallo)\n");
     }
+
+    libera_memoria_temp_tabla_boltzmann(&red, tabla_temp);
+    free(tabla_temp);
+    tabla_temp = NULL;
+    libera_memoria_red(&red);
+
     return 0;
 }
 
 static int validar_configuraciones_red(void) {
 
     caract_red_t red = genera_red(16);
-    inicia_randomizador_pcg64(&red.generador_rng, 20260830, 1);
+    uint64_t semilla_global = 20260830;
+    int id_ejecucion = 1;
+    inicia_randomizador_pcg64(&red.generador_rng, semilla_global, id_ejecucion);
     inicio_red_spines(&red);
     int i = 0, aux3 = 0;
     double aux = 0.0, aux1 = 0.0, aux2 = 0.0;
