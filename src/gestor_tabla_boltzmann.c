@@ -5,10 +5,9 @@
 #include "gestor_tabla_boltzmann.h"
 
 #include <math.h>
+#include <stdlib.h>
 
 #include "gestor_de_red.h"
-
-#include <stdlib.h>
 
 //Tenemos que llamar a esta función antes de la zona paralelizada, para que funcione para todas las ejecuciones
 void genera_tabla_boltzmann(caract_red_t *ejecucion, tabla_boltzmann_t *tabla_temp) {
@@ -59,7 +58,6 @@ void libera_memoria_temp_tabla_boltzmann(caract_red_t *ejecucion, tabla_boltzman
     for (i_temp = 0; i_temp < ejecucion->n_temp; i_temp++) libera_memoria_struct_tabla_boltzmann(&tabla_temp[i_temp]);
 }
 
-//TEMPORAL, necesitamos ponerlo en su lugar, anteriormente, gestor de ejecuciones
-double calcula_temp_star(caract_red_t*ejecucion, int i_temp) {
-    return ejecucion->temp_i + i_temp * (ejecucion->temp_f - ejecucion->temp_i)/((double)ejecucion->n_temp - 1);
+double calcula_temp_star(const caract_red_t *ejecucion, int i_temp) {
+    return ejecucion->temp_i + i_temp * (ejecucion->temp_f - ejecucion->temp_i)/(double)(ejecucion->n_temp - 1);
 }

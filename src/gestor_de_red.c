@@ -28,6 +28,7 @@ caract_red_t genera_red(int largo_red) {
     alm_red.n_temp = 41;
     alm_red.energia_total = 0.0;
     alm_red.magn_total = 0;
+    alm_red.n_mc = 10;
 
     alm_red.n_sp = alm_red.largo_red*alm_red.largo_red; //Determinamos que el tamaño del arreglo sea largo*largo
     alm_red.spin= (int8_t *)malloc(alm_red.n_sp * sizeof(int8_t)); //Asignamos memoria dinamica para el arreglo de spines

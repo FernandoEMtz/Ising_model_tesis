@@ -24,6 +24,7 @@ typedef struct {
     double temp_f;
     double energia_total;
     int magn_total;
+    int n_mc;
 }caract_red_t;
 
 caract_red_t genera_red(int largo_red);

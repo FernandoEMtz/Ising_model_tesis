@@ -23,8 +23,12 @@ add_executable(Tesis_Modelo_Ising_V1 main.c
         include/gestor_de_observables.h
         src/gestor_tabla_boltzmann.c
         include/gestor_tabla_boltzmann.h
-        src/gestor_montecarlo.c
-        include/gestor_montecarlo.h)
+        src/gestor_metropolis.c
+        include/gestor_metropolis.h
+        src/gestor_de_ejecuciones.c
+        include/gestor_de_ejecuciones.h
+        src/gestor_de_datos_de_salida.c
+        include/gestor_de_datos_de_salida.h)
 target_include_directories(Tesis_Modelo_Ising_V1 PRIVATE include)
 
 target_link_libraries(Tesis_Modelo_Ising_V1 PRIVATE cjson_static pcg_static)

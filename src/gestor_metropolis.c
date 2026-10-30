@@ -2,7 +2,7 @@
 // Created by Fernando on 29/10/2026.
 //
 
-#include "gestor_montecarlo.h"
+#include "gestor_metropolis.h"
 #include "gestor_de_red.h"
 #include "gestor_tabla_boltzmann.h"
 
@@ -24,7 +24,7 @@ int funcion_metropolis_intento(caract_red_t * ejecucion, const tabla_boltzmann_t
     if (factor_boltzmann >= 1 || ejecuta_randomizador_pcg64(&ejecucion->generador_rng) < factor_boltzmann) {
         //Cambio en el spin
         delta_ener = 2.0 * selec_spin * (ejecucion->J * suma_de_vecinos + ejecucion->h_campo);
-        ejecucion->spin[i] = -selec_spin;
+        ejecucion->spin[i] = - selec_spin;
         ejecucion->energia_total += delta_ener;
         ejecucion->magn_total += -2 * selec_spin;
         return 1;
