@@ -20,9 +20,10 @@ typedef struct {
     long long aceptados; //guardar solo los barridos medidos
 }result_montecarlo_t;
 
-void recorrido_temperaturas(caract_red_t *ejecucion, const tabla_boltzmann_t *tablas, result_montecarlo_t *resultado_mc);
-void funcion_montecarlo(caract_red_t *ejecucion, const tabla_boltzmann_t *tabla);
+void funcion_recorrido_temperaturas(caract_red_t *ejecucion, const tabla_boltzmann_t *tablas, result_montecarlo_t *resultado_mc);
+void funcion_montecarlo(caract_red_t *ejecucion, const tabla_boltzmann_t *tabla, result_montecarlo_t *resultado_mc);
 double calcula_temp_star(const caract_red_t *ejecucion, int i_temp);
 void inicia_struct_resultados(result_montecarlo_t *resultado_mc);
+void almacena_resultados_barrido(result_montecarlo_t *resultado_mc, const caract_red_t *ejecucion, int aceptados);
 
 #endif //TESIS_MODELO_ISING_V1_GESTOR_DE_EJECUCIONES_H
