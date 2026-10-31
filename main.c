@@ -1,60 +1,26 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "gestor_de_ejecuciones.h"
 #include "gestor_de_red.h"
 #include "gestor_de_observables.h"
-#include "gestor_tabla_boltzmann.h"
-#include "gestor_de_ejecuciones.h"
-//Los .c van en /src y los .h en /include
 
-//static int validar_configuraciones_red(void);
+#include "gestor_de_pruebas.h"
 
-//#define OK    1
-//#define FALLO 0
+static int prueba_arranque_ordenado(void) {
+    prueba_t p = prepara_prueba(8, 0.0, 2.0);
+    int ok = 0;
+
+    inicio_red_ordenado(&p.red);
+    p.red.energia_total = funcion_hamiltoniano(&p.red);
+    p.red.magn_total = funcion_magnetizacion_total(&p.red);
+
+    ok = (p.red.energia_total == -2.0 * p.red.n_sp) && (p.red.magn_total == p.red.n_sp);
+    libera_prueba(&p);
+    return ok ? prueba_ok:prueba_fallo;
+}
+
 
 int main(void) {
-
-    caract_red_t red = genera_red(16);
-
-    result_montecarlo_t *resultados = NULL;
-    tabla_boltzmann_t *tabla_temp = NULL;
-
-    uint64_t semilla_global = 20260830;
-    int id_ejecucion = 1;
-    inicia_randomizador_pcg64(&red.generador_rng, semilla_global, id_ejecucion);
-
-    tabla_temp = malloc(red.n_temp * sizeof(tabla_boltzmann_t));
-    resultados = malloc(red.n_temp *sizeof(result_montecarlo_t));
-
-    if (tabla_temp == NULL || resultados == NULL) {
-        printf("Error: fallo al asignar la memoria para las tablas o para los resultados\n");
-        free(tabla_temp);
-        free(resultados);
-        libera_memoria_red(&red);
-        return EXIT_FAILURE;
-    }
-
-    genera_tabla_boltzmann(&red, tabla_temp);
-    funcion_recorrido_temperaturas(&red, tabla_temp,resultados);
-
-    printf("Resultados\n");
-    for (int i_temp = 0 ; i_temp < red.n_temp ; i_temp++) {
-        double muestras = (double)resultados[i_temp].muestras;
-        double ener_prom = resultados[i_temp].sum_ener/muestras;
-        double magn_abs = resultados[i_temp].sum_magn_abs / muestras;
-        double aceptacion = resultados[i_temp].aceptados / (muestras * (double)red.n_sp);
-
-        printf("Temperatura indice [%d]:\n", i_temp);
-        printf("E/N    = %f\n", ener_prom);
-        printf("|M|/N  = %f\n", magn_abs);
-        printf("Acept. = %f\n\n", aceptacion);
-    }
-
-    libera_memoria_temp_tabla_boltzmann(&red, tabla_temp);
-    libera_memoria_red(&red);
-    free(tabla_temp);
-    free(resultados);
-
-    return 0;
+    registra_prueba("arranque ordenado: E = -2N, M = N", prueba_arranque_ordenado());
+    return resumen_pruebas() != 0 ? 1:0;
 }

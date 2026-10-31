@@ -28,7 +28,9 @@ add_executable(Tesis_Modelo_Ising_V1 main.c
         src/gestor_de_ejecuciones.c
         include/gestor_de_ejecuciones.h
         src/gestor_de_datos_de_salida.c
-        include/gestor_de_datos_de_salida.h)
+        include/gestor_de_datos_de_salida.h
+        src/gestor_de_pruebas.c
+        include/gestor_de_pruebas.h)
 target_include_directories(Tesis_Modelo_Ising_V1 PRIVATE include)
 
 target_link_libraries(Tesis_Modelo_Ising_V1 PRIVATE cjson_static pcg_static)
