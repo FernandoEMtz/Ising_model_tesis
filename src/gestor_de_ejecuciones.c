@@ -14,7 +14,7 @@
 //El gestor metropolis queda entonces separado para que trabaje por su cuenta
 //Si en algun momento queremos evaluar por otro medio como Wolff se puede hacer el cambio sin muchas modificaciones
 
-void funcion_recorrido_temperaturas(caract_red_t *ejecucion, const tabla_boltzmann_t *tablas, result_montecarlo_t *resultado_mc) {
+void funcion_recorrido_temperaturas(parametros_de_red_t *ejecucion, const tabla_boltzmann_t *tablas, result_montecarlo_t *resultado_mc) {
     int i_temp = 0;
 
     for (i_temp = 0; i_temp < ejecucion->n_temp; i_temp++) {
@@ -23,21 +23,21 @@ void funcion_recorrido_temperaturas(caract_red_t *ejecucion, const tabla_boltzma
         inicia_struct_resultados(&resultado_mc[i_temp]);
 
         ejecucion->energia_total = funcion_hamiltoniano(ejecucion);
-        ejecucion->magn_total = funcion_magnetizacion_total(ejecucion);
+        ejecucion->mgntc_total = funcion_magnetizacion_total(ejecucion);
 
         funcion_montecarlo(ejecucion, &tablas[i_temp], &resultado_mc[i_temp]);
     }
 }
 
-void funcion_montecarlo(caract_red_t *ejecucion, const tabla_boltzmann_t *tabla, result_montecarlo_t *resultado_mc) {
+void funcion_montecarlo(parametros_de_red_t *ejecucion, const tabla_boltzmann_t *tabla, result_montecarlo_t *resultado_mc) {
     int i_termalizacion = 0, i_medicion = 0; //Termalizacion
     int aceptados_barrido = 0;
 
     //Termalizacion
-    for(i_termalizacion = 0; i_termalizacion < ejecucion->n_mc; i_termalizacion++) funcion_metropolis_barrido(ejecucion, tabla);
+    for(i_termalizacion = 0; i_termalizacion < ejecucion->num_therm_mc; i_termalizacion++) funcion_metropolis_barrido(ejecucion, tabla);
 
     //Medicion
-    for (i_medicion = 0; i_medicion < ejecucion->n_med; i_medicion++) {
+    for (i_medicion = 0; i_medicion < ejecucion->num_barr_med; i_medicion++) {
         aceptados_barrido = funcion_metropolis_barrido(ejecucion, tabla);
         almacena_resultados_barrido(resultado_mc, ejecucion, aceptados_barrido);
     }
@@ -53,10 +53,10 @@ void inicia_struct_resultados(result_montecarlo_t *resultado_mc) {
     resultado_mc->aceptados = 0;
 }
 
-void almacena_resultados_barrido(result_montecarlo_t *resultado_mc, const caract_red_t *ejecucion, int aceptados_barrido) {
+void almacena_resultados_barrido(result_montecarlo_t *resultado_mc, const parametros_de_red_t *ejecucion, int aceptados_barrido) {
     double ener = 0.0, magn = 0.0, magn2 = 0.0;
     ener = (double)ejecucion->energia_total/ (double)ejecucion->n_sp;
-    magn = fabs((double)ejecucion->magn_total / (double)ejecucion->n_sp);
+    magn = fabs((double)ejecucion->mgntc_total / (double)ejecucion->n_sp);
     magn2 = magn * magn;
     resultado_mc->sum_ener += ener;
     resultado_mc->sum_ener_cuad += ener*ener;

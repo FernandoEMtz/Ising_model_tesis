@@ -12,9 +12,9 @@ static int prueba_arranque_ordenado(void) {
 
     inicio_red_ordenado(&p.red);
     p.red.energia_total = funcion_hamiltoniano(&p.red);
-    p.red.magn_total = funcion_magnetizacion_total(&p.red);
+    p.red.mgntc_total = funcion_magnetizacion_total(&p.red);
 
-    ok = (p.red.energia_total == -2.0 * p.red.n_sp) && (p.red.magn_total == p.red.n_sp);
+    ok = (p.red.energia_total == -2.0 * p.red.n_sp) && (p.red.mgntc_total == p.red.n_sp);
     libera_prueba(&p);
     return ok ? prueba_ok:prueba_fallo;
 }

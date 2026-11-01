@@ -17,9 +17,9 @@
 int pruebas_pasadas = 0;
 int pruebas_falladas = 0;
 
-void inicio_red_ordenado(caract_red_t *ejecucion) {
+void inicio_red_ordenado(parametros_de_red_t *ejecucion) {
     int i = 0;
-    for (i = 0; i < ejecucion->n_sp; i++) ejecucion->spin[i] = 1;
+    for (i = 0; i < ejecucion->n_sp; i++) ejecucion->arr_spin[i] = 1;
 }
 
 prueba_t prepara_prueba(int L, double h, double T) {
@@ -27,16 +27,16 @@ prueba_t prepara_prueba(int L, double h, double T) {
     prueba_t prueba;
 
     prueba.red = genera_red(L);
-    prueba.red.J = 1.0;
-    prueba.red.h_campo = h;
-    prueba.red.temp_i = T;
-    prueba.red.temp_f = T;
+    prueba.red.J_intns_aco = 1.0;
+    prueba.red.h_cpo_mgntc_extr = h;
+    prueba.red.temp_ini = T;
+    prueba.red.temp_fin = T;
     prueba.red.n_temp = 1;
 
     inicia_randomizador_pcg64(&prueba.red.generador_rng, semilla_global, id_ejecucion);
     inicio_red_spines(&prueba.red);
     prueba.red.energia_total = funcion_hamiltoniano(&prueba.red);
-    prueba.red.magn_total = funcion_magnetizacion_total(&prueba.red);
+    prueba.red.mgntc_total = funcion_magnetizacion_total(&prueba.red);
 
     prueba.tabla = calculo_tabla_boltzmann(T, &prueba.red);
     return prueba;
@@ -63,7 +63,7 @@ int resumen_pruebas(void) {
 }
 
 static int prueba_num_5(void) {
-    caract_red_t red = genera_red(16);
+    parametros_de_red_t red = genera_red(16);
 
     result_montecarlo_t *resultados = NULL;
     tabla_boltzmann_t *tabla_temp = NULL;

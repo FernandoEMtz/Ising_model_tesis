@@ -7,11 +7,11 @@
 #include "gestor_tabla_boltzmann.h"
 
 //Intento de metropolis en el sitio, devuelve 1 si fue aceptado el cambio o 0 si no
-int funcion_metropolis_intento(caract_red_t * ejecucion, const tabla_boltzmann_t *tabla, int i) {
+int funcion_metropolis_intento(parametros_de_red_t * ejecucion, const tabla_boltzmann_t *tabla, int i) {
     int selec_spin = 0, suma_de_vecinos = 0;
     double delta_ener = 0.0, factor_boltzmann = 0.0;
     //i determinado por pcg64, en este caso, lo determinamos para hacer pruebas
-    selec_spin = ejecucion->spin[i];
+    selec_spin = ejecucion->arr_spin[i];
     suma_de_vecinos = funcion_suma_de_vecinos(ejecucion, i);
 
     factor_boltzmann = consulta_tabla_boltzmann(tabla, suma_de_vecinos, selec_spin);
@@ -23,17 +23,17 @@ int funcion_metropolis_intento(caract_red_t * ejecucion, const tabla_boltzmann_t
     //porque el recíproco que aplica la tabla es exp(+2q/T), que es justo exp(−ΔE/T) para ese caso.
     if (factor_boltzmann >= 1 || ejecuta_randomizador_pcg64(&ejecucion->generador_rng) < factor_boltzmann) {
         //Cambio en el spin
-        delta_ener = 2.0 * selec_spin * (ejecucion->J * suma_de_vecinos + ejecucion->h_campo);
-        ejecucion->spin[i] = - selec_spin;
+        delta_ener = 2.0 * selec_spin * (ejecucion->J_intns_aco * suma_de_vecinos + ejecucion->h_cpo_mgntc_extr);
+        ejecucion->arr_spin[i] = - selec_spin;
         ejecucion->energia_total += delta_ener;
-        ejecucion->magn_total += -2 * selec_spin;
+        ejecucion->mgntc_total += -2 * selec_spin;
         return 1;
     }else {
         return 0;
     }
 }
 
-int funcion_metropolis_barrido(caract_red_t * ejecucion, const tabla_boltzmann_t *tabla) {
+int funcion_metropolis_barrido(parametros_de_red_t * ejecucion, const tabla_boltzmann_t *tabla) {
     int i_accpt = 0, i_nsp = 0, rand_spin = 0;
     //Ciclo de spines
     for (i_nsp = 0; i_nsp < ejecucion->n_sp; i_nsp++) {

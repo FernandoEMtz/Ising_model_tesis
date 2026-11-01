@@ -12,12 +12,12 @@
 #define prueba_fallo 0
 
 typedef struct {
-    caract_red_t red;
+    parametros_de_red_t red;
     tabla_boltzmann_t tabla;
 }prueba_t;
 
 prueba_t prepara_prueba(int L, double h, double T);
-void inicio_red_ordenado(caract_red_t *ejecucion);
+void inicio_red_ordenado(parametros_de_red_t *ejecucion);
 void libera_prueba(prueba_t *prueba);
 void registra_prueba(const char *nombre, int resultado);
 int resumen_pruebas(void);

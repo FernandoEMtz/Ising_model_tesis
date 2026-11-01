@@ -4,58 +4,42 @@
 
 #include "gestor_de_red.h"
 #include "pcg_variants.h"
-#include "cJSON.h"
+#include "gestor_de_datos_de_entrada.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 
-void mensaje_dato_nulo(cJSON *root, const char *nombre_dato) {
-    printf("\n\tError de validacion: CAMPO NULO\n");
-    printf("No se ha ingresado ningun dato para '%s'\n", nombre_dato);
-}
-
-void mensaje_dato_erroneo(cJSON *root, const char *nombre_dato, const char *tipo_dato) {
-
-    printf("\n\tError de validacion: TIPO DE DATO ERRONEO\n");
-    printf("El dato ingresado para '%s' no es del tipo solicitado ['%s']\n", nombre_dato, tipo_dato);
-    cJSON_Delete(root);
-    exit(EXIT_FAILURE);
-}
-
-caract_red_t genera_red(int largo_red) {
-    caract_red_t alm_red;
+parametros_de_red_t genera_red(parametros_t *parametros, int largo_red) {
+    //Inicio de struct parametros en cero
+    parametros_de_red_t alm_red = {0};
 
     if (largo_red < 4) {
         printf("Error al crear la red, largo muy pequenio\n");
         exit(EXIT_FAILURE);
     }
-
     alm_red.largo_red = largo_red;//Después podemos cambiar este 16 con el sentido del tamaño creciente de la red
 
-    alm_red.J = 1.0;//Despues podemos cambiar de dirección al cjson
-    alm_red.h_campo = 0.0; //Mismo caso que con J
-    alm_red.n_vec = 4; //Sirve para las redes simples bidimensionales, podría ser una constante
-    alm_red.temp_i = 3.0;
-    alm_red.temp_f = 5.0;
-    alm_red.n_temp = 2;
-    alm_red.energia_total = 0.0;
-    alm_red.magn_total = 0;
-    alm_red.n_mc = 10;
-    alm_red.n_med = 5000;
+    alm_red.J_intns_aco = parametros->J_intns_aco;
+    alm_red.h_cpo_mgntc_extr = parametros->h_cpo_mgntc_extr;
+    alm_red.temp_ini = parametros->temp_ini;
+    alm_red.temp_fin = parametros->temp_fin;
+    alm_red.n_temp = parametros->n_temp;
+    alm_red.num_therm_mc = parametros->num_therm_mc;
+    alm_red.num_barr_med = parametros->num_barr_med;
+    alm_red.n_vec = 4;
+    alm_red.n_sp = alm_red.largo_red*alm_red.largo_red;
+    alm_red.arr_spin = (int8_t *)malloc(alm_red.n_sp * sizeof(int8_t));
 
-    alm_red.n_sp = alm_red.largo_red*alm_red.largo_red; //Determinamos que el tamaño del arreglo sea largo*largo
-    alm_red.spin = (int8_t *)malloc(alm_red.n_sp * sizeof(int8_t)); //Asignamos memoria dinamica para el arreglo de spines
-
-    if (alm_red.spin == NULL) {
+    if (alm_red.arr_spin == NULL) {
         printf("Error al asignar memoria para %d entradas de la red\n", alm_red.n_sp);
         exit(EXIT_FAILURE);
     }
     return alm_red;
 }
 
-void libera_memoria_red(caract_red_t *red) {
-    free(red->spin);
-    red->spin = NULL;
+void libera_memoria_red(parametros_de_red_t *red) {
+    free(red->arr_spin);
+    red->arr_spin = NULL;
     red->n_sp = 0;
 }
 
@@ -69,28 +53,28 @@ double ejecuta_randomizador_pcg64(pcg64_random_t *random_local) {
     return (double)bits_53/(1ULL << 53);
 }
 
-void inicio_red_spines(caract_red_t *ejecucion) {
+void inicio_red_spines(parametros_de_red_t *ejecucion) {
     int i = 0;
     double randomcito = 0.0;
 
     for (i = 0; i < ejecucion->n_sp; i++) {
         randomcito = ejecuta_randomizador_pcg64(&ejecucion->generador_rng);
         //printf("%f\n", randomcito);
-        ejecucion->spin[i] = (randomcito < 0.5) ? -1 : 1;
+        ejecucion->arr_spin[i] = (randomcito < 0.5) ? -1 : 1;
     }
 }
 
-int funcion_suma_de_vecinos(const caract_red_t *ejecucion, int i) {
+int funcion_suma_de_vecinos(const parametros_de_red_t *ejecucion, int i) {
     int j = 0, k = 0, up = 0, dw = 0, lf = 0, rg = 0;
     int largo = ejecucion->largo_red;
 
     j = i/largo; //Se obtiene la fila
     k = i%largo; //Se obtiene la columna
 
-    up = (j == 0) ? ejecucion->spin[i + largo * (largo - 1)] : ejecucion->spin[i - largo];
-    dw = (j == largo - 1) ? ejecucion->spin[i - largo * (largo - 1)] : ejecucion->spin[i + largo];
-    lf = (k == 0) ? ejecucion->spin[i + (largo - 1)] : ejecucion->spin[i -1];
-    rg = (k == largo - 1) ? ejecucion->spin[i - (largo - 1)] : ejecucion->spin[i + 1];
+    up = (j == 0) ? ejecucion->arr_spin[i + largo * (largo - 1)] : ejecucion->arr_spin[i - largo];
+    dw = (j == largo - 1) ? ejecucion->arr_spin[i - largo * (largo - 1)] : ejecucion->arr_spin[i + largo];
+    lf = (k == 0) ? ejecucion->arr_spin[i + (largo - 1)] : ejecucion->arr_spin[i -1];
+    rg = (k == largo - 1) ? ejecucion->arr_spin[i - (largo - 1)] : ejecucion->arr_spin[i + 1];
 
     return (up + dw + lf + rg);
 }

@@ -10,7 +10,7 @@
 #include "gestor_de_red.h"
 
 //Tenemos que llamar a esta función antes de la zona paralelizada, para que funcione para todas las ejecuciones
-void genera_tabla_boltzmann(caract_red_t *ejecucion, tabla_boltzmann_t *tabla_temp) {
+void genera_tabla_boltzmann(parametros_de_red_t *ejecucion, tabla_boltzmann_t *tabla_temp) {
     int i_temp = 0;
     double temp_star = 0.0;
 
@@ -20,7 +20,7 @@ void genera_tabla_boltzmann(caract_red_t *ejecucion, tabla_boltzmann_t *tabla_te
     }
 }
 
-tabla_boltzmann_t calculo_tabla_boltzmann(double temp_star, caract_red_t *ejecucion) {
+tabla_boltzmann_t calculo_tabla_boltzmann(double temp_star, parametros_de_red_t *ejecucion) {
     tabla_boltzmann_t tabla;
     int i = 0, prod_spin_vec = 0;   //Suma del producto de los vecinos, hay que pensar en un nombre más intuitivo
     double q = 0.0;
@@ -35,7 +35,7 @@ tabla_boltzmann_t calculo_tabla_boltzmann(double temp_star, caract_red_t *ejecuc
     //Calculo de los valores de la tabla
     for (i = 0; i < tabla.tam; i++) {
         prod_spin_vec = - ejecucion->n_vec + 2 * i;
-        q = ejecucion->J * (double)prod_spin_vec + ejecucion->h_campo; //Recordemos que delta E queda implicito
+        q = ejecucion->J_intns_aco * (double)prod_spin_vec + ejecucion->h_cpo_mgntc_extr; //Recordemos que delta E queda implicito
         tabla.valores[i] = exp(-2.0 * q / temp_star);
     }
     return tabla;
@@ -53,11 +53,11 @@ void libera_memoria_struct_tabla_boltzmann(tabla_boltzmann_t *tabla) {
     tabla->tam = 0;
 }
 
-void libera_memoria_temp_tabla_boltzmann(caract_red_t *ejecucion, tabla_boltzmann_t *tabla_temp) {
+void libera_memoria_temp_tabla_boltzmann(parametros_de_red_t *ejecucion, tabla_boltzmann_t *tabla_temp) {
     int i_temp = 0;
     for (i_temp = 0; i_temp < ejecucion->n_temp; i_temp++) libera_memoria_struct_tabla_boltzmann(&tabla_temp[i_temp]);
 }
 
-double calcula_temp_star(const caract_red_t *ejecucion, int i_temp) {
-    return ejecucion->temp_i + i_temp * (ejecucion->temp_f - ejecucion->temp_i)/(double)(ejecucion->n_temp - 1);
+double calcula_temp_star(const parametros_de_red_t *ejecucion, int i_temp) {
+    return ejecucion->temp_ini + i_temp * (ejecucion->temp_fin - ejecucion->temp_ini)/(double)(ejecucion->n_temp - 1);
 }
