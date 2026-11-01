@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-parametros_de_red_t genera_red(parametros_t *parametros, int largo_red) {
+parametros_de_red_t genera_red(const parametros_t *parametros, int largo_red) {
     //Inicio de struct parametros en cero
     parametros_de_red_t alm_red = {0};
 
@@ -26,7 +26,6 @@ parametros_de_red_t genera_red(parametros_t *parametros, int largo_red) {
     alm_red.n_temp = parametros->n_temp;
     alm_red.num_therm_mc = parametros->num_therm_mc;
     alm_red.num_barr_med = parametros->num_barr_med;
-    alm_red.n_vec = 4;
     alm_red.n_sp = alm_red.largo_red*alm_red.largo_red;
     alm_red.arr_spin = (int8_t *)malloc(alm_red.n_sp * sizeof(int8_t));
 
@@ -59,7 +58,6 @@ void inicio_red_spines(parametros_de_red_t *ejecucion) {
 
     for (i = 0; i < ejecucion->n_sp; i++) {
         randomcito = ejecuta_randomizador_pcg64(&ejecucion->generador_rng);
-        //printf("%f\n", randomcito);
         ejecucion->arr_spin[i] = (randomcito < 0.5) ? -1 : 1;
     }
 }

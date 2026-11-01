@@ -9,6 +9,7 @@
 #include "pcg_variants.h"
 #include "gestor_de_datos_de_entrada.h"
 
+
 typedef struct {
     double J_intns_aco;         //J intensidad de acoplamiento, de preferencia en 1.0
     double h_cpo_mgntc_extr;    //h campo magnetico externo, de preferencia en 0.0
@@ -19,14 +20,13 @@ typedef struct {
     int n_temp;                 //Número de temperaturas a simular
     int num_therm_mc;           //Número de pasos para termalización (Montecarlo)
     int num_barr_med;           //Numero de pasos para barrido medio
-    int n_vec;                  //De momento dejamos fijo el dato
     int n_sp;                   //Número total de spines, se obtiene por largo_red*largo_red
     int8_t *arr_spin;           //Puntero del arreglo de spines de longitud dinamica
     int largo_red;              //CAMBIAR A ARRAY
     pcg64_random_t generador_rng;//TEMPORAL, acomodar en donde va
 }parametros_de_red_t;
 
-parametros_de_red_t genera_red(parametros_t *parametros, int largo_red);
+parametros_de_red_t genera_red(const parametros_t *parametros, int largo_red);
 void libera_memoria_red(parametros_de_red_t *red);
 void inicio_red_spines(parametros_de_red_t *ejecucion);
 void inicia_randomizador_pcg64(pcg64_random_t *random_local, uint64_t state_init, uint64_t state_seq);

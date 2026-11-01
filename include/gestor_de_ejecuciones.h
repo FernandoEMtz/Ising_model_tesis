@@ -6,6 +6,7 @@
 #define TESIS_MODELO_ISING_V1_GESTOR_DE_EJECUCIONES_H
 
 #include "gestor_tabla_boltzmann.h"
+#include "gestor_de_red.h"
 
 typedef struct {
     //recordatorio tenemos E/N , |M|/N , M^2 , M^4
@@ -22,7 +23,6 @@ typedef struct {
 
 void funcion_recorrido_temperaturas(parametros_de_red_t *ejecucion, const tabla_boltzmann_t *tablas, result_montecarlo_t *resultado_mc);
 void funcion_montecarlo(parametros_de_red_t *ejecucion, const tabla_boltzmann_t *tabla, result_montecarlo_t *resultado_mc);
-double calcula_temp_star(const parametros_de_red_t *ejecucion, int i_temp);
 void inicia_struct_resultados(result_montecarlo_t *resultado_mc);
 void almacena_resultados_barrido(result_montecarlo_t *resultado_mc, const parametros_de_red_t *ejecucion, int aceptados);
 

@@ -103,3 +103,22 @@ static int prueba_num_5(void) {
     free(resultados);
     return 1;
 }
+
+/*
+*static int prueba_arranque_ordenado(void) {
+prueba_t p = prepara_prueba(8, 0.0, 2.0);
+int ok = 0;
+
+inicio_red_ordenado(&p.red);
+p.red.energia_total = funcion_hamiltoniano(&p.red);
+p.red.mgntc_total = funcion_magnetizacion_total(&p.red);
+
+ok = (p.red.energia_total == -2.0 * p.red.n_sp) && (p.red.mgntc_total == p.red.n_sp);
+libera_prueba(&p);
+return ok ? prueba_ok:prueba_fallo;
+
+//registra_prueba("arranque ordenado: E = -2N, M = N", prueba_arranque_ordenado());
+//return resumen_pruebas() != 0 ? 1:0;
+}
+
+*/
