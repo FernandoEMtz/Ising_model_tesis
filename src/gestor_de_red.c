@@ -9,54 +9,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-//Recibimos los datos para crear cada red, será de tamaño dinamico, con base al largo que recibiremos
-
-parametros_t gestor_de_configuracion(const char *json_string) {
-    //Debemos de parsear los datos de texto a cjson
-    cJSON *root = cJSON_Parse(json_string);
-
-    //Verificacion de que el archivo cjson tenga los datos
-    if (root == NULL) {
-        printf("Error al abrir el cJSON\n");
-        exit(EXIT_FAILURE);
-    }
-
-    parametros_t parametros;
-    //Esto es para iniciar el struct antes de recibir los datos
-    inicia_struct_parametros(&parametros);
-
-    //Largo red en int
-    cJSON *largo_red_item = cJSON_GetObjectItemCaseSensitive(root, "largo_red");
-    //Campo vacio
-    if (largo_red_item == NULL || cJSON_IsNull(largo_red_item)) {
-        mensaje_dato_nulo(root, "largo_red");
-    }else if (cJSON_IsNumber(largo_red_item)) {
-        parametros.largo_red = (int)largo_red_item->valuedouble;
-    }else {
-        mensaje_dato_erroneo(root, "largo_red", "entero");
-    }
-
-/*
-    //TEMPORAL generador rng, lo recibimos en double, deberia de ser otro tipo al menos int, revisar
-    cJSON *gen_rng_pcg64_item = cJSON_GetObjectItemCaseSensitive(root, "generador_rng");
-    if (cJSON_IsNumber(gen_rng_pcg64_item)) {
-        parametros.generador_rng = gen_rng_pcg64_item->valuedouble;
-    }else {
-        mensaje_de_error(root, "la semilla del generador pcg64", "double");
-    }
-
-    //J en double
-    cJSON *J_item = cJSON_GetObjectItemCaseSensitive(root, "J");
-    if (cJSON_IsNumber(J_item)) {
-        parametros.J = J_item->valuedouble;
-    }else {
-        mensaje_de_error(root, "la constante de acoplamiento fisica", "double");
-    }
-*/
-
-    return parametros;
-}
-
 void mensaje_dato_nulo(cJSON *root, const char *nombre_dato) {
     printf("\n\tError de validacion: CAMPO NULO\n");
     printf("No se ha ingresado ningun dato para '%s'\n", nombre_dato);
@@ -70,26 +22,6 @@ void mensaje_dato_erroneo(cJSON *root, const char *nombre_dato, const char *tipo
     exit(EXIT_FAILURE);
 }
 
-void inicia_struct_parametros(parametros_t *parametros) {
-    parametros->largo_red = 0;
-    parametros->n_sp = parametros->largo_red*parametros->largo_red;
-    parametros->generador_rng = 0.0;
-    parametros->J = 0.0;
-    parametros->h_campo = 0.0;
-    parametros->n_vec = 0;//Condicionado a si permitimos que lo ingresen o lo tenemos fijo en el programa
-    parametros->temp_i = 0.0;
-    parametros->temp_f = 0.0;
-    parametros->n_temp = 0;
-    parametros->n_mc = 0;
-    parametros->n_med = 0;
-}
-/*
- *
- *Recuerda, tenemos que asignar y limpiar la memoria del arreglo de longitud variable de la temperatura
-void libera_memoria_parametros(parametros_t *parametros) {
-    //free(parametros->);
-}
-*/
 caract_red_t genera_red(int largo_red) {
     caract_red_t alm_red;
 
