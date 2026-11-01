@@ -1,0 +1,11 @@
+{
+  "semilla_global": 20260830,
+  "arr_largo_red": [16, 32],
+  "J_intns_aco": 1,
+  "h_cpo_mgntc_extr": 0,
+  "temp_ini": 2.0,
+  "temp_fin": 2.5,
+  "n_temp": 41,
+  "num_therm_mc": 10,
+  "num_barr_med": 5000
+}

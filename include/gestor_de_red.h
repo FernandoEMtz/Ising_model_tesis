@@ -22,7 +22,7 @@ typedef struct {
     int num_barr_med;           //Numero de pasos para barrido medio
     int n_sp;                   //Número total de spines, se obtiene por largo_red*largo_red
     int8_t *arr_spin;           //Puntero del arreglo de spines de longitud dinamica
-    int largo_red;              //CAMBIAR A ARRAY
+    int largo_red;              //Largo de la red para la ejecucion en turno
     pcg64_random_t generador_rng;//TEMPORAL, acomodar en donde va
 }parametros_de_red_t;
 

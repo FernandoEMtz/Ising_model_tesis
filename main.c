@@ -6,21 +6,18 @@
 
 #include "gestor_de_pruebas.h"
 
-static const char *json = R"({
-    "semilla_global": 20260830,
-    "arr_largo_red": [16,32],
-    "J_intns_aco": 1,
-    "h_cpo_mgntc_extr": 0,
-    "temp_ini": 2.0,
-    "temp_fin": 2.5,
-    "n_temp": 41,
-    "num_therm_mc": 10,
-    "num_barr_med": 5000
-})";
 
-int main(void) {
+
+int main(int argc, char *argv[]) {
+
+    if (argc < 2) {
+        fprintf(stderr,"Uso %s <parametros_simulacion.json>\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
     //Inicio de estructuras
-    parametros_t parametros = gestor_de_configuracion(json);
+    char *entrada = lectura_archivo_cjson(argv[1]);
+    parametros_t parametros = gestor_de_configuracion(entrada);
+    free(entrada);
     tabla_boltzmann_t *tablas = NULL;
     result_montecarlo_t *resultados = NULL;
 
@@ -51,8 +48,9 @@ int main(void) {
             double ener_prom = resultados[i_temp].sum_ener/muestras;
             double magn_abs = resultados[i_temp].sum_magn_abs / muestras;
             double aceptacion = resultados[i_temp].aceptados / (muestras * (double)red.n_sp);
+            double temp_actual = calcula_temp_star(&parametros, i_temp);
 
-            printf("Temperatura indice [%d]:\n", i_temp);
+            printf("Temperatura indice [%d] -> T: [%.4f] \n", i_temp, temp_actual);
             printf("E/N    = %f\n", ener_prom);
             printf("|M|/N  = %f\n", magn_abs);
             printf("Acept. = %f\n\n", aceptacion);

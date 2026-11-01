@@ -10,6 +10,8 @@
 #include <stdint.h>
 #include <math.h>
 #include <limits.h>
+#include <stdbool.h>
+#include <string.h>
 
 #include "cJSON.h"
 
@@ -19,6 +21,67 @@ static void lectura_asignacion_arr_largo_red(cJSON *root, parametros_t *parametr
 static _Noreturn void mensaje_dato_nulo(cJSON *root, const char *nombre_dato);
 static _Noreturn void mensaje_dato_erroneo(cJSON *root, const char *nombre_dato, const char *tipo_dato);
 static _Noreturn void mensaje_dato_fuera_de_rango(cJSON *root, const char *nombre_dato, double lim_inf, double lim_sup);
+static void validacion_de_llaves(cJSON *root);
+
+char *lectura_archivo_cjson(const char *nombre_archivo) {
+    //Lectura del archivo cjson
+    FILE *archivo = fopen(nombre_archivo, "rb");
+    //Validacion archivo no nulo
+    if (archivo == NULL) {
+        perror("Error al abrir el archivo cJSON");
+        exit(EXIT_FAILURE);
+    }
+    //Validacion de fseek
+    if (fseek(archivo, 0, SEEK_END) != 0) {
+        perror("Error al leer el archivo cJSON: No se encuentra el final");
+        fclose(archivo);
+        exit(EXIT_FAILURE);
+    }
+    //Error en el archivo
+    long tam = ftell(archivo);
+    if (tam <0) {
+        perror("Error al obtener el tamanio del archivo");
+        fclose(archivo);
+        exit(EXIT_FAILURE);
+    }
+    //Archivo vacio
+    if (tam == 0) {
+        fprintf(stderr, "Error: el archivo esta vacio\n");
+        fclose(archivo);
+        exit(EXIT_FAILURE);
+    }
+    //Control tamanio maximo archivo, 1mb
+    if (tam > (1024*1024)) {
+        fprintf(stderr, "Error: el archivo supera el tamanio maximo permitido (1 mb)\n");
+        fclose(archivo);
+        exit(EXIT_FAILURE);
+    }
+
+    if (fseek(archivo, 0, SEEK_SET) != 0) {
+        perror("Error al leer el archivo del archivo");
+        fclose(archivo);
+        exit(EXIT_FAILURE);
+    }
+    //Asignacion de memoria dinamica para el buffer que guarda el json como texto
+    char *buffer = malloc(tam +1);
+    if (buffer == NULL) {
+        printf("Error de memoria al crear el buffer \n");
+        fclose(archivo);
+        exit(EXIT_FAILURE);
+    }
+    //Comprobacion de los bytes reales del archivo, para evitar obtener basura
+    size_t bytes_leidos = fread(buffer, 1, tam, archivo);
+    if (bytes_leidos < (size_t)tam && ferror(archivo)) {
+        perror("Error al leer el contenido del archivo cJSON \n");
+        free(buffer);
+        fclose(archivo);
+        exit(EXIT_FAILURE);
+    }
+    //Seguro para fin de cadena
+    buffer[bytes_leidos] = '\0';
+    fclose(archivo);
+    return buffer;
+}
 
 parametros_t gestor_de_configuracion(const char *json_string) {
     //Inicio del struct parametro en ceros
@@ -44,6 +107,7 @@ parametros_t gestor_de_configuracion(const char *json_string) {
         }
         exit(EXIT_FAILURE);
     }
+    validacion_de_llaves(root);
     //Lectura y asignacion de la semilla global
     parametros.semilla_global = (uint64_t)validar_parametro_int(root, "semilla_global",
         "entero no negativo", 0.0, (double)((1ULL <<53)-1));
@@ -51,16 +115,39 @@ parametros_t gestor_de_configuracion(const char *json_string) {
     lectura_asignacion_arr_largo_red(root, &parametros);
     //Lectura y asignacion de J (intensidad de acoplamiento)
     parametros.J_intns_aco = validar_parametro_double(root, "J_intns_aco",
-        "Numero real, se sugiere 1.0 para un material ferromagnetico, caso J = 0 trivialidad de experimento",-1000,1000);
+        "Numero real, se sugiere 1.0 para un material ferromagnetico",-1000,1000);
+    if(parametros.J_intns_aco == 0.0) {
+        printf("\n\tAVISO de validacion de parametros en cJSON: [J = 0.0]\n");
+        printf("Valor actual para la constante de intensidad de acoplamiento J = %f\n", parametros.J_intns_aco);
+        printf("El experimento solo considerara la aportacion del campo magnetico externo\n");
+    }
     //Lectura y asignacion de h (Campo magnetico externo)
     parametros.h_cpo_mgntc_extr = validar_parametro_double(root, "h_cpo_mgntc_extr",
         "numero real, se sugiere 0 para no considerar la aportacion del campo",-1000, 1000);
+    if (parametros.J_intns_aco == 0.0 && parametros.h_cpo_mgntc_extr == 0.0) {
+        printf("\n\tError de validacion de parametros en cJSON: [TRIVIALIDAD DE EXPERIMENTO]\n");
+        printf("Valor actual para la constante de intensidad de acoplamiento J = %f\n", parametros.J_intns_aco);
+        printf("Valor actual para la constante del campo magnetico externo h = %f\n", parametros.h_cpo_mgntc_extr);
+        printf("El experimento se vuelve trivial\n");
+        cJSON_Delete(root);
+        exit(EXIT_FAILURE);
+    }
     //Lectura y asignacion de la temperatura inicial
     parametros.temp_ini = validar_parametro_double(root, "temp_ini",
         "numero real positivo", 0.0, 100.0);
+    if (parametros.temp_ini == 0.0) {
+        printf("Error en el valor de la temperatura inicial, tiene que ser mayor a 0.0\n");
+        cJSON_Delete(root);
+        exit(EXIT_FAILURE);
+    }
     //Lectura y asignacion de la temperatura final
     parametros.temp_fin = validar_parametro_double(root, "temp_fin",
         "numero real positivo mayor al valor de la temperatura inicial", parametros.temp_ini,100.0);
+    if (parametros.temp_ini == parametros.temp_fin) {
+        printf("Error en los valores de la temperatura, la temperatura inicial tiene que ser diferente a la temperatura final\n");
+        cJSON_Delete(root);
+        exit(EXIT_FAILURE);
+    }
     //Lectura y asignacion del número de intervalos de temperatura
     parametros.n_temp = (int)validar_parametro_int(root, "n_temp",
         "al menos dos puntos de temperatura", 2, 10000);
@@ -70,18 +157,40 @@ parametros_t gestor_de_configuracion(const char *json_string) {
     //Lectura y asignacion del número de barrido medio
     parametros.num_barr_med = (int)validar_parametro_int(root, "num_barr_med",
         "entero positivo", 1.0, INT_MAX);
-    if (parametros.temp_ini == 0.0) {
-        printf("Error en el valor de la temperatura inicial, tiene que ser mayor a 0.0\n");
-        cJSON_Delete(root);
-        exit(EXIT_FAILURE);
-    }
-    if (parametros.temp_ini == parametros.temp_fin) {
-        printf("Error en los valores de la temperatura, la temperatura inicial tiene que ser diferente a la temperatura final\n");
-        cJSON_Delete(root);
-        exit(EXIT_FAILURE);
-    }
+    //Numero de vecinos, importante considerar si se quiere usar para mas tamanios
+    parametros.n_vec = 4;
     cJSON_Delete(root);
     return parametros;
+}
+
+static void validacion_de_llaves(cJSON *root) {
+    const char *llaves_validas[] = {"semilla_global", "arr_largo_red", "J_intns_aco", "h_cpo_mgntc_extr", "temp_ini",
+        "temp_fin","n_temp", "num_therm_mc", "num_barr_med"};
+    const int total_llaves = sizeof(llaves_validas)/sizeof(llaves_validas[0]);
+    if (!cJSON_IsObject(root)) {
+        printf("\n\tError de validacion en el archivo cJSON: [ESCRITURA NO VALIDA] El archivo debe contener un objeto '{...}' en su raiz\n");
+        cJSON_Delete(root);
+        exit(EXIT_FAILURE);
+    }
+    //Recorrido lineal de todos los hijos del objeto raiz (root)
+    cJSON *elemento = root->child;
+    while (elemento != NULL) {
+        bool llave_encontrada = false;
+        //Comprobadion de que el elemento este en la lista de las llaves
+        for (int i = 0; i < total_llaves; i++) {
+            if (strcmp(elemento->string, llaves_validas[i]) == 0) {
+                llave_encontrada = true;
+                break;
+            }
+        }
+        if (!llave_encontrada){
+            printf("\n\tError de validacion en el archivo cJSON: [LLAVE DESCONOCIDA] -> %s\n", elemento->string);
+            cJSON_Delete(root);
+            exit(EXIT_FAILURE);
+        }
+        //Pasamos a validar el siguiente elemento
+        elemento = elemento->next;
+    }
 }
 
 static long long validar_parametro_int(cJSON *root, const char *nombre_dato, const char *tipo_dato, double lim_inf, double lim_sup) {
@@ -168,7 +277,7 @@ static void lectura_asignacion_arr_largo_red(cJSON *root, parametros_t *parametr
     for (int i = 0; i < parametros->cont_tam_red; i++) {
         cJSON *elemento = cJSON_GetArrayItem(arr_largo_red_item, i);
         if (!cJSON_IsNumber(elemento) || elemento->valuedouble != (double)elemento->valueint) {
-            printf("Error: El elemento en la posicion %d de 'arr_largo_red_item' debe ser un entero mayor o igual a 4 y menor a 1024\n",i);
+            printf("Error: El elemento en la posicion %d de 'arr_largo_red' debe ser un entero mayor o igual a 4 y menor a 1024\n",i);
             //Libera memoria que acabamos de recibir
             libera_memoria_arr_largo_red(parametros);
             cJSON_Delete(root);
@@ -197,7 +306,7 @@ static void lectura_asignacion_arr_largo_red(cJSON *root, parametros_t *parametr
     //Rechazo de repetidos
     for (int i = 0; i < parametros->cont_tam_red - 1; i++) {
         if (parametros->arr_largo_red[i] == parametros->arr_largo_red[i + 1]) {
-            printf("Error: El arreglo 'arr_largo_red_item' contiene el valor %d repetido\n",parametros->arr_largo_red[i]);
+            printf("Error: El arreglo 'arr_largo_red' contiene el valor %d repetido\n",parametros->arr_largo_red[i]);
             libera_memoria_arr_largo_red(parametros);
             cJSON_Delete(root);
             exit(EXIT_FAILURE);

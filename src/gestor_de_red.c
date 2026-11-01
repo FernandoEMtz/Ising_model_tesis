@@ -17,8 +17,7 @@ parametros_de_red_t genera_red(const parametros_t *parametros, int largo_red) {
         printf("Error al crear la red, largo muy pequenio\n");
         exit(EXIT_FAILURE);
     }
-    alm_red.largo_red = largo_red;//Después podemos cambiar este 16 con el sentido del tamaño creciente de la red
-
+    alm_red.largo_red = largo_red;
     alm_red.J_intns_aco = parametros->J_intns_aco;
     alm_red.h_cpo_mgntc_extr = parametros->h_cpo_mgntc_extr;
     alm_red.temp_ini = parametros->temp_ini;

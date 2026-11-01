@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#define n_vec 4
-
 typedef struct {
 
     uint64_t semilla_global;
@@ -21,8 +19,10 @@ typedef struct {
     int n_temp;
     int num_therm_mc;
     int num_barr_med;
+    int n_vec;
 }parametros_t;
 
+char *lectura_archivo_cjson(const char *nombre_archivo);
 parametros_t gestor_de_configuracion(const char *json_string);
 void libera_memoria_arr_largo_red(parametros_t *parametros);
 

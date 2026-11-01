@@ -26,7 +26,7 @@ tabla_boltzmann_t calculo_tabla_boltzmann(const parametros_t *parametros, double
     int i = 0, sum_prod_spin_vec = 0;
     double q = 0.0;
 
-    tabla.tam = n_vec+1;
+    tabla.tam = parametros->n_vec+1;
     tabla.valores = malloc(tabla.tam * sizeof(*tabla.valores));
 
     if (tabla.valores == NULL) {
@@ -36,7 +36,7 @@ tabla_boltzmann_t calculo_tabla_boltzmann(const parametros_t *parametros, double
     }
     //Calculo de los valores de la tabla
     for (i = 0; i < tabla.tam; i++) {
-        sum_prod_spin_vec = - n_vec + 2 * i;
+        sum_prod_spin_vec = - parametros->n_vec + 2 * i;
         q = parametros->J_intns_aco * (double)sum_prod_spin_vec + parametros->h_cpo_mgntc_extr; //Recordemos que delta E queda implicito
         tabla.valores[i] = exp(-2.0 * q / temp_star);
     }
