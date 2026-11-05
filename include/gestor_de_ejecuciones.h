@@ -21,9 +21,8 @@ typedef struct {
     long long aceptados; //guardar solo los barridos medidos
 }result_montecarlo_t;
 
-void funcion_recorrido_temperaturas(parametros_de_red_t *ejecucion, const tabla_boltzmann_t *tablas, result_montecarlo_t *resultado_mc);
+void funcion_recorrido_temperaturas(uint64_t semilla_global, parametros_de_red_t *ejecucion, const tabla_boltzmann_t *tablas, result_montecarlo_t *resultado_mc);
 void funcion_montecarlo(parametros_de_red_t *ejecucion, const tabla_boltzmann_t *tabla, result_montecarlo_t *resultado_mc);
-void inicia_struct_resultados(result_montecarlo_t *resultado_mc);
 void almacena_resultados_barrido(result_montecarlo_t *resultado_mc, const parametros_de_red_t *ejecucion, int aceptados);
 
 #endif //TESIS_MODELO_ISING_V1_GESTOR_DE_EJECUCIONES_H

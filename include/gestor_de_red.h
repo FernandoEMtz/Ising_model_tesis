@@ -26,11 +26,15 @@ typedef struct {
     pcg64_random_t generador_rng;//TEMPORAL, acomodar en donde va
 }parametros_de_red_t;
 
+//Constante para pgc64
+#define PGC_INIT_SEQ 22011997
+
 parametros_de_red_t genera_red(const parametros_t *parametros, int largo_red);
 void libera_memoria_red(parametros_de_red_t *red);
 void inicio_red_spines(parametros_de_red_t *ejecucion);
-void inicia_randomizador_pcg64(pcg64_random_t *random_local, uint64_t state_init, uint64_t state_seq);
+void inicia_randomizador_pcg64(pcg64_random_t *random_local, pcg128_t semilla_global, pcg128_t id_tarea);
 double ejecuta_randomizador_pcg64(pcg64_random_t *random_local);
 int funcion_suma_de_vecinos(const parametros_de_red_t *ejecucion, int i);
-
+void reporte_de_simulacion(const parametros_t *parametros, int largo_red);
+uint64_t calcula_id_tarea(int largo_red, int i_temp, int replica);
 #endif //TESIS_MODELO_ISING_V1_GESTOR_RED_H

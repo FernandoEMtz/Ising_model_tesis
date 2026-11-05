@@ -13,10 +13,8 @@
 //Tenemos que llamar a esta función antes de la zona paralelizada, para que funcione para todas las ejecuciones
 void genera_tabla_boltzmann(const parametros_t *parametros, tabla_boltzmann_t *tabla_temp) {
     int i_temp = 0;
-    double temp_star = 0.0;
-
     for (i_temp = 0; i_temp < parametros->n_temp; i_temp++) {
-        temp_star = calcula_temp_star(parametros, i_temp); //Recordemos que tenemos capado a 41 temperaturas, hay que hacer el cambio respectivo
+        double temp_star = calcula_temp_star(parametros, i_temp);
         tabla_temp[i_temp] = calculo_tabla_boltzmann(parametros, temp_star);
     }
 }
@@ -24,7 +22,6 @@ void genera_tabla_boltzmann(const parametros_t *parametros, tabla_boltzmann_t *t
 tabla_boltzmann_t calculo_tabla_boltzmann(const parametros_t *parametros, double temp_star) {
     tabla_boltzmann_t tabla;
     int i = 0, sum_prod_spin_vec = 0;
-    double q = 0.0;
 
     tabla.tam = parametros->n_vec+1;
     tabla.valores = malloc(tabla.tam * sizeof(*tabla.valores));
@@ -37,7 +34,7 @@ tabla_boltzmann_t calculo_tabla_boltzmann(const parametros_t *parametros, double
     //Calculo de los valores de la tabla
     for (i = 0; i < tabla.tam; i++) {
         sum_prod_spin_vec = - parametros->n_vec + 2 * i;
-        q = parametros->J_intns_aco * (double)sum_prod_spin_vec + parametros->h_cpo_mgntc_extr; //Recordemos que delta E queda implicito
+        double q = parametros->J_intns_aco * (double)sum_prod_spin_vec + parametros->h_cpo_mgntc_extr; //Recordemos que delta E queda implicito
         tabla.valores[i] = exp(-2.0 * q / temp_star);
     }
     return tabla;

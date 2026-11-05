@@ -7,6 +7,14 @@
 
 #include <stdint.h>
 
+#define N_TEMP_MAX 10000
+#define TEMP_MAX 100
+#define L_MAX 1024
+#define R_MAX 1024
+#define H_MAX 1000
+#define J_MAX 1000
+
+
 typedef struct {
 
     uint64_t semilla_global;
@@ -23,7 +31,7 @@ typedef struct {
 }parametros_t;
 
 char *lectura_archivo_cjson(const char *nombre_archivo);
-parametros_t gestor_de_configuracion(const char *json_string);
+parametros_t gestor_de_parametros(const char *json_string);
 void libera_memoria_arr_largo_red(parametros_t *parametros);
 
 #endif //TESIS_MODELO_ISING_V1_GESTOR_DE_DATOS_DE_ENTRADA_H
