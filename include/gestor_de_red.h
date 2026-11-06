@@ -36,5 +36,5 @@ void inicia_randomizador_pcg64(pcg64_random_t *random_local, pcg128_t semilla_gl
 double ejecuta_randomizador_pcg64(pcg64_random_t *random_local);
 int funcion_suma_de_vecinos(const parametros_de_red_t *ejecucion, int i);
 void reporte_de_simulacion(const parametros_t *parametros, int largo_red);
-uint64_t calcula_id_tarea(int largo_red, int i_temp, int replica);
+uint64_t calcula_id_tarea(int largo_red, int i_temp, int i_rep);
 #endif //TESIS_MODELO_ISING_V1_GESTOR_RED_H

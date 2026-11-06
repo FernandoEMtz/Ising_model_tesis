@@ -98,14 +98,14 @@ void reporte_de_simulacion(const parametros_t *parametros, int largo_red) {
     printf("Total barridos a realizar:\t\t%d\n\n", parametros->num_therm_mc + parametros->num_barr_med);
 }
 
-uint64_t calcula_id_tarea(int largo_red, int i_temp, int replica) {
-    if (largo_red <= L_MAX && i_temp <= N_TEMP_MAX && replica <= R_MAX) {
-        return ((uint64_t)largo_red * N_TEMP_MAX+ i_temp) * R_MAX + replica;
+uint64_t calcula_id_tarea(int largo_red, int i_temp, int i_rep) {
+    if (largo_red <= L_MAX && i_temp <= N_TEMP_MAX && i_rep <= R_MAX) {
+        return ((uint64_t)largo_red * N_TEMP_MAX+ i_temp) * R_MAX + i_rep;
     } else {
         fprintf(stderr,"Error al calcular el id de la tarea\n");
         if (largo_red > L_MAX) fprintf(stderr, "El largo de la red es mayor al permitido\n");
         if (i_temp > N_TEMP_MAX)fprintf(stderr, "El i_temp de la red es mayor al permitido\n");
-        if (replica > R_MAX) fprintf(stderr, "La replica es mayor a la permitida\n");
+        if (i_rep > R_MAX) fprintf(stderr, "La replica es mayor a la permitida\n");
         exit(EXIT_FAILURE);
     }
 }
